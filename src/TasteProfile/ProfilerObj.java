@@ -5,8 +5,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,10 +70,10 @@ public class ProfilerObj extends ProfilerPOA {
 				profileCache.addToProfile(strUserId, strSongId, timesPlayed);
 
 			}
-			System.out.println(
-					String.format("Total number of users cached : %d", profileCache.getSize()));
+			System.out.println(String.format("Total number of users cached : %d", profileCache.getSize()));
 			System.out.println(
 					String.format("initializeUsersCache() ran for %d ms", (System.currentTimeMillis() - startTime)));
+			System.out.println(String.format("UserProfileCache : %s", profileCache.toString()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -136,5 +138,25 @@ public class ProfilerObj extends ProfilerPOA {
 		System.out.println(obj.getTimesPlayedByUser("f0cd8df775b33e171e2f1f5454338e2f82feaa89", "SOYJYFW12A8C130E52"));
 		System.out.println(obj.getTimesPlayedByUser("cbe161a3d8767529b2ddba2ba1a205d4a2591b30", "SOPXKYD12A6D4FA876"));
 		System.out.println(obj.getTimesPlayed("SOYJYFW12A8C130E52"));
+	}
+
+	@Override
+	public UserProfile getUserProfile(String userId) {
+		MusicUserProfile profile = profileCache.getUserProfile(userId);
+		UserProfileImpl corbaProfile = new UserProfileImpl(profile.getUserId(),
+				UserProfileHelper.getCorbaSongObjects(profile.getSongMap()));
+		return corbaProfile;
+	}
+
+	@Override
+	public UserProfileSequence getTopTenUsers() {
+		UserProfile[] corbaProfiles = new UserProfile[10];
+		List<MusicUserProfile> topProfiles = profileCache.getTopTenPriorityProfiles();
+		int index = 0;
+		for (final MusicUserProfile aProfile : topProfiles) {
+			corbaProfiles[index++] = new UserProfileImpl(aProfile.getUserId(),
+					UserProfileHelper.getCorbaSongObjects(aProfile.getSongMap()));
+		}
+		return new UserProfileSequenceImpl(corbaProfiles);
 	}
 }

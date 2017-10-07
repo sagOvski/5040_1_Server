@@ -36,6 +36,7 @@ public class MusicUserProfile implements Comparable<MusicUserProfile> {
 		this.songMap = songMap;
 	}
 
+	
 	public void addSong(final String songId, final Integer timesPlayed) {
 		if (null != songMap.putIfAbsent(songId, timesPlayed)) {
 			songMap.put(songId, Integer.sum(songMap.get(songId), timesPlayed));

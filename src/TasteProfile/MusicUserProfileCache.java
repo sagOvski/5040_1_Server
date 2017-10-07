@@ -1,8 +1,10 @@
 package TasteProfile;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -33,6 +35,10 @@ public class MusicUserProfileCache {
 		} else {
 			userProfile.addSong(strSongId, timesPlayed);
 		}
+	}
+
+	public List<MusicUserProfile> getTopTenPriorityProfiles() {
+		return profileCache.stream().sorted().limit(10).collect(Collectors.toList());
 	}
 
 	public MusicUserProfile getUserProfile(final String userId) {
