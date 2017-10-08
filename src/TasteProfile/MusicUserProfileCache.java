@@ -1,5 +1,6 @@
 package TasteProfile;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,10 @@ public class MusicUserProfileCache {
 		}
 	}
 
+	public Set<MusicUserProfile> getSet() {
+		return this.profileCache;
+	}
+
 	public void addToProfile(String strUserId, String strSongId, Integer timesPlayed) {
 		MusicUserProfile userProfile = this.getUserProfile(strUserId);
 		if (null == userProfile) {
@@ -38,7 +43,9 @@ public class MusicUserProfileCache {
 	}
 
 	public List<MusicUserProfile> getTopTenPriorityProfiles() {
-		return profileCache.stream().sorted().limit(10).collect(Collectors.toList());
+		List<MusicUserProfile> sortedProfiles = profileCache.stream().sorted().collect(Collectors.toList());
+		Collections.reverse(sortedProfiles);
+		return (sortedProfiles.subList(0, 10));
 	}
 
 	public MusicUserProfile getUserProfile(final String userId) {
@@ -51,7 +58,12 @@ public class MusicUserProfileCache {
 	}
 
 	public MusicUserProfile getLeastPriorityUserProfile() {
-		return profileCache.stream().min(MusicUserProfile::compareTo).get();
+		MusicUserProfile prof = profileCache.stream().min(MusicUserProfile::compareTo).get();
+		if (prof.getPriority() > 2000) {
+			System.out.println("removing profile : " + prof.toString());
+		}
+
+		return prof;
 	}
 
 	public boolean containsUserProfile(final String userId) {
@@ -65,29 +77,6 @@ public class MusicUserProfileCache {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-	}
-
-	public static void main(String args[]) {
-		MusicUserProfileCache cache = new MusicUserProfileCache(3);
-
-		MusicUserProfile profile = new MusicUserProfile("123");
-		profile.addSong("song1", new Integer(3));
-		MusicUserProfile profile2 = new MusicUserProfile("456");
-		profile2.addSong("song1", new Integer(2));
-		profile2.addSong("song2", new Integer(6));
-		MusicUserProfile profile3 = new MusicUserProfile("789");
-		profile3.addSong("song2", new Integer(5));
-		MusicUserProfile profile4 = new MusicUserProfile("1010");
-		profile4.addSong("song1", new Integer(7));
-
-		cache.add(profile);
-		cache.add(profile3);
-		cache.add(profile2);
-		System.out.println(cache.getSize());
-		System.out.println(cache.toString());
-		cache.add(profile4);
-		System.out.println(cache.getSize());
-		System.out.println(cache.toString());
 	}
 
 }
