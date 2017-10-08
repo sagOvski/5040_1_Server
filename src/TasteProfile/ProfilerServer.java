@@ -31,9 +31,6 @@ public class ProfilerServer {
 			NameComponent path[] = ncRef.to_name("ABC");
 			ncRef.rebind(path, href);
 
-			profilerObj.initializeUsersCache();
-			profilerObj.initializeSongsCache();
-
 			System.out.println("Profiler Server ready and waiting ...");
 
 			// wait for invocations from clients
